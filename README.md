@@ -37,9 +37,67 @@ Dense(5, softmax)
 
 El **fine-tuning** permitio pasar de 53% a 72% de accuracy al desbloquear las capas de EfficientNetB0 y ajustar los pesos con un learning rate mas bajo.
 
-## Analisis de Resultados
+---
 
-### Metricas por clase
+## Analisis del Dataset
+
+### Distribucion de imagenes por clase
+
+![Distribucion](img/02_distribucion_dataset.png)
+
+| Clase | Imagenes | Porcentaje |
+|-------|----------|------------|
+| F22 | 443 | 20.7% |
+| J20 | 486 | 22.7% |
+| JAS39 | 370 | 17.3% |
+| Rafale | 429 | 20.0% |
+| Su57 | 402 | 18.8% |
+| **Total** | **2,130** | **100%** |
+
+**Observacion:** El dataset esta relativamente balanceado. La clase con mas datos es J20 (486) y la con menos es JAS39 (370), una diferencia de solo 116 imagenes.
+
+### Ejemplo de imagenes por clase (4 por clase)
+
+![Ejemplos](img/03_ejemplos_por_clase.png)
+
+**Observaciones:**
+- Las imagenes tienen resoluciones y angulos muy diferentes
+- Algunas estan borrosas o con fondos complejos
+- El modelo debe aprender a identificar la forma del avion sin importar el angulo ni la calidad
+
+### Analisis de dimensiones de imagenes
+
+![Tamanos](img/07%20analisis_tamanos.png)
+
+- La mayoria de imagenes tienen relacion de aspecto cuadrada (1:1)
+- Hay variacion en los tamanos originales antes de redimensionar a 224x224
+
+### Tabla resumen del dataset
+
+![Resumen](img/08_tabla_resumen.png)
+
+---
+
+## Analisis del Entrenamiento
+
+### Comportamiento del entrenamiento
+
+![Entrenamiento](img/09_comportamiento_entrenamiento.png)
+
+**Fase 1: Entrenamiento Normal (10 epocas)**
+- Accuracy inicio: 23.6% → Final: 52.9%
+- Loss inicio: 2.36 → Final: 1.32
+- Curvas de train y validation siguen tendencia similar = buen fit
+
+**Fase 2: Fine-Tuning (10 epocas)**
+- Accuracy inicio: 39.2% → Final: 71.2%
+- Loss inicio: 1.70 → Final: 0.79
+- Validation accuracy mejora consistentemente
+- Sin signos de overfitting significativo
+
+### Metricas por clase (Reporte de clasificacion)
+
+![Reporte](img/10_reporte_clasificacion.png)
 
 | Clase | Precision | Recall | F1-Score | Support |
 |-------|-----------|--------|----------|---------|
@@ -50,18 +108,9 @@ El **fine-tuning** permitio pasar de 53% a 72% de accuracy al desbloquear las ca
 | Su57 | 0.67 | 0.62 | 0.65 | 96 |
 | **Promedio** | **0.72** | **0.72** | **0.72** | **711** |
 
-### Ejemplo de imagenes por clase
-
-![Clases](img/01_ejemplo_clases.png)
-
-**Observaciones:**
-- Las imagenes tienen resoluciones y angulos muy diferentes
-- Algunas estan borrosas o con fondos complejos
-- El modelo debe aprender a identificar la forma del avion sin importar el angulo ni la calidad
-
 ### Matriz de Confusion
 
-![Confusion](img/04_matriz_confusion.png)
+![Confusion](img/11_matriz_confusion.png)
 
 **Analisis de la matriz:**
 
@@ -81,9 +130,13 @@ El **fine-tuning** permitio pasar de 53% a 72% de accuracy al desbloquear las ca
 - **Su57**: 48 aciertos de 72 (67%) - Confusion generalizada
 - **JAS39**: 56 aciertos de 79 (71%) - Confundido con Rafale
 
-### Predicciones del Modelo
+---
 
-![Predicciones](img/05_predicciones.png)
+## Predicciones del Modelo
+
+### Visualizacion de aciertos y errores
+
+![Predicciones](img/12_predicciones.png)
 
 **Analisis de las predicciones:**
 
@@ -99,6 +152,37 @@ El **fine-tuning** permitio pasar de 53% a 72% de accuracy al desbloquear las ca
 
 **Patron identificado:** Las imagenes con mayor calidad y angulos claros generan predicciones correctas con alta confianza. Las imagenes borrosas o con angulos inusuales generan confusiones.
 
+---
+
+## Prueba con Dataset Test
+
+### Resultados en imagenes externas
+
+![Test](img/13_prueba_test.png)
+
+El dataset de prueba contiene **20 imagenes externas** (4 por clase) que no fueron usadas durante el entrenamiento.
+
+**Analisis de resultados:**
+- Las imagenes claras y con angulos frontales/laterales son clasificadas correctamente
+- Las imagenes borrosas o con angulos inusuales generan errores
+- El modelo muestra confianza alta (>80%) cuando la imagen es clara
+
+---
+
+## Resumen de Resultados
+
+![Resumen](img/14_resumen_resultados.png)
+
+| Metrica | Valor |
+|---------|-------|
+| Accuracy Final | 71.9% |
+| Mejor Clase (F1) | J20 (0.78) |
+| Peor Clase (F1) | JAS39 (0.62) |
+| Total Imagenes | 2,130 |
+| Epocas Totales | 20 (10 + 10) |
+
+---
+
 ## Dataset
 
 El dataset esta disponible en Google Drive:
@@ -108,30 +192,39 @@ El dataset esta disponible en Google Drive:
 ### Estructura del dataset
 
 ```
-dataset-cazas/          (3555 imagenes totales)
-├── F22/
-├── J20/
-├── JAS39/
-├── Rafale/
-└── Su57/
+dataset-cazas/          (2,130 imagenes totales)
+├── F22/                (443 imagenes)
+├── J20/                (486 imagenes)
+├── JAS39/              (370 imagenes)
+├── Rafale/             (429 imagenes)
+└── Su57/               (402 imagenes)
 
-dataset-test/           (imagenes de prueba externas)
+dataset-test/           (20 imagenes de prueba externas)
+├── f22_01.jpg - f22_04.jpg
+├── j20_01.jpg - j20_04.jpg
+├── jas39_01.jpg - jas39_04.jpg
+├── rafale_01.jpg - rafale_04.jpg
+└── su57_01.jpg - su57_04.jpg
 ```
+
+---
 
 ## Conclusiones
 
 1. **El modelo funciona** con 72% de accuracy en 5 clases
-2. **J20 es la clase mas facil** de identificar por su forma unica
-3. **Su57 es la clase mas dificil** por tener menor representacion en el dataset y forma similar a otros cazas
+2. **J20 es la clase mas facil** de identificar por su forma unica (recall: 0.84)
+3. **JAS39 es la clase mas dificil** porque se confunde con el Rafale (recall: 0.56)
 4. **La calidad de imagen afecta directamente** la prediccion - imagenes borrosas generan confusiones
 5. **El fine-tuning fue clave** - sin el, el modelo solo alcanzaba 53% de accuracy
+6. **El dataset esta balanceado** - no hay sesgo hacia ninguna clase
 
 ## Mejoras posibles
 
-- Aumentar el dataset con mas imagenes de Su57 y JAS39
+- Aumentar el dataset con mas imagenes de JAS39 y Su57
 - Aplicar data augmentation mas agresivo
 - Probar con EfficientNetB3 o ResNet50
 - Implementar attention mechanisms para focalizar en el avion
+- Usar pesos de clase balanceados para mejorar recall en clases minoritarias
 
 ## Tecnologias
 
