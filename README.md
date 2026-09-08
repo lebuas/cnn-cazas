@@ -234,10 +234,8 @@ dataset-test/           (20 imagenes de prueba externas)
 | **Kernel** | Linux 6.12.75-1-lts |
 | **CPU** | AMD A12-9700P RADEON R7 (4 cores @ 2.50 GHz) |
 | **GPU** | AMD Radeon R5 M330 + Radeon R7 Graphics (integrada) |
-| **RAM** | 10.65 GB (61% en uso) |
-| **Monitor** | MSI MP2412 - 1920x1080 @ 100Hz |
-| **Terminal** | Alacritty 0.17.0 |
-| **Shell** | zsh 5.9.2 |
+| **RAM** | 12 GB |
+
 
 **Nota:** El entrenamiento se realizo en **CPU** (no GPU) ya que TensorFlow no soporta nativamente AMD ROCm en esta configuracion. El tiempo de entrenamiento fue de aproximadamente **45 minutos** para las 20 epocas totales.
 
